@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Botões por Geolocalização</title>
+  <style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Orbitron', sans-serif;
+    background: linear-gradient(270deg, #1460a7, #1056b8, #001f4d, #005073, #125766);
+    background-size: 1000% 1000%;
+    animation: gradientBG 20s ease infinite;
+    color: white;
+    padding: 40px 20px;
+  }
+
+  @keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+
+  h1 {
+    font-size: 48px;
+    margin: 0 0 20px 0;
+    background: linear-gradient(to right, #7FDBFF, #39CCCC);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  }
+
+  .imagem-destaque {
+    width: 100%;
+    max-width: 1000px;
+    height: auto;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    margin-bottom: 30px;
+  }
+
+  .button {
+    display: inline-block;
+    margin: 12px;
+    padding: 15px 35px;
+    font-size: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .button:hover:not(.disabled) {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.08);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  .button.disabled {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #aaa;
+    cursor: not-allowed;
+    pointer-events: none;
+    box-shadow: none;
+    transform: none;
+  }
+
+  h2 {
+    font-size: 14px;
+    color: #ccc;
+    margin-top: 40px;
+    text-align: center;
+    padding: 20px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    backdrop-filter: blur(6px);
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+
+  @media (max-width: 768px) {
+    .button {
+      width: 90%;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 32px;
+    }
+  }
+</style>
+
+</head>
+<body>
+
+  <img src="videfrigo.jpg" alt="Imagem de destaque" class="imagem-destaque">
+
+  <h1>Geolocalizador</h1>
+
+  <a id="btn1" class="button" href="https://forms.gle/epGGX64XECBT5LPA6" target="_blank">Videira</a>
+  <a id="btn2" class="button" href="https://forms.gle/UZLyyoFkmWQWye5u9" target="_blank">Concórdia</a>
+  <a id="btn3" class="button" href="https://forms.gle/7t28nYEN3sjikFAt7" target="_blank">Ponta Grossa</a>
+  <a id="btn4" class="button" href="https://forms.gle/7dR64yPpD5cMsVf49" target="_blank">Palhoça</a>
+  <a id="btn5" class="button" href="https://forms.gle/33AYfrcWr7GzF1sd8" target="_blank">Curitiba</a>
+
+  <script>
+    function getDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    const locations = [
+      { id: "btn1", lat: -27.000598, lng: -51.067136 },
+      { id: "btn2", lat: -27.229961, lng: -51.950748 },
+      { id: "btn3", lat: -25.148586, lng: -50.146435 },
+      { id: "btn4", lat: -27.705623, lng: -48.659257 },
+      { id: "btn5", lat: -25.521327, lng: -49.324675 }
+    ];
+
+    locations.forEach(loc => {
+      const button = document.getElementById(loc.id);
+      button.classList.add("disabled");
+    });
+
+    navigator.geolocation.getCurrentPosition(position => {
+      const userLat = position.coords.latitude;
+      const userLng = position.coords.longitude;
+
+      locations.forEach(loc => {
+        const button = document.getElementById(loc.id);
+        const distance = getDistance(userLat, userLng, loc.lat, loc.lng);
+
+        if (distance <= 20) {
+          button.classList.remove("disabled");
+        }
+      });
+    }, () => {
+      alert("Não foi possível obter sua localização.");
+    });
+  </script>
+
+<div class="header">
+    <h2>Videfrigo - Todos os direitos reservados</h2>
+</div>
+
+</body>
+</html>
